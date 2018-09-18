@@ -1,23 +1,20 @@
-TARGET = udp_send udp_recv
 CC = gcc
 CFLAGS = -Os 
-.PHONY: default all clean
+#.PHONY: default all clean
 
-all: $(TARGET)
 
-OBJECTS := $(patsubst %.c, %.o, $(wildcard *.c))
-HEADERS = $(wildcard *.h)
+OBJ := $(patsubst %.c, %.o, $(wildcard *.c))
+INC = $(wildcard *.h)
+PROGS := udp_send udp_recv
 
-%.o: %.c $(HEADERS)
-	$(CC) $(CFLAGS) -c $< -o $@
 
-.PRECIOUS: $(TARGET) $(OBJECTS)
+$(foreach P,$(PROGS),$(eval OBJ_$(P) := $(wildcard $(P).c)))
 
-$(TARGET): $(OBJECTS)
-	ar ru $@ $^
-	ranlib $@
+$(foreach P,$(PROGS),$(eval $(P) := $(OBJ_$(P))))
 
+
+all: $(PROGS)
 
 clean:
-	rm -f *.o
-	rm -f $(TARGET)
+	rm -f $(OBJ)
+	rm -f $(PROGS)
